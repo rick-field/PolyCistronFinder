@@ -1,1 +1,4 @@
-test_ignore.txt
+*
+!README.md
+!PCF.py
+!test_file.txt
