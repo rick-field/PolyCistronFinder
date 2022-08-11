@@ -1,0 +1,7 @@
+*
+!.gitignore
+!PCF.py
+!PCF_species_short.txt
+!minimap2.sh
+!samtools_sort.sh
+!README.md
