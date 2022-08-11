@@ -1,5 +1,7 @@
 *
+!.gitignore
 !README.md
 !PCF.py
 !minimap2.sh
 !samtools_sort.sh
+!test_file.txt
