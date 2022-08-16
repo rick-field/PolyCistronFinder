@@ -1,15 +1,10 @@
 *
 !.gitignore
-<<<<<<< HEAD
 !PCF.py
 !PCF_species_short.txt
+!PCF_species.txt
 !minimap2.sh
 !samtools_sort.sh
+!samtools_view_256.sh
+!samtools_view_2048.sh
 !README.md
-=======
-!README.md
-!PCF.py
-!minimap2.sh
-!samtools_sort.sh
-!test_file.txt
->>>>>>> 611ae1d5080746b4a2999a03a70bcae3592f674e
