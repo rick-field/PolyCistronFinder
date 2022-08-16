@@ -77,7 +77,7 @@ def bam_to_bed(bam_name):
     else:
         print("Converting %s to bed format..." % bam_name)
         bed = pybedtools.BedTool(args.data_path + bam_name).bam_to_bed(split=True)
-        bed.saveas(out_dir + "/" + new_bed_name)
+        bed.saveas(args.data_path + "/" + new_bed_name)
 
     return new_bed_name # String
 
@@ -89,7 +89,7 @@ def bed_maker(bed_list):
     print("Combining bed files...")
     combined_read_bed = []
     for i in bed_list:
-        bed_file = args.data_path + '/' + i[0]
+        bed_file = args.data_path + i[0]
         sample_ID = str(i[1])
         with open(bed_file, "r") as bed:
             bed = bed.readlines()
@@ -102,7 +102,13 @@ def bed_maker(bed_list):
     combined_read_bed_set = []
     for i in combined_read_bed:
         i = i.strip().split('\t')
-        combined_read_bed_set.append(i)
+        if args.chrom_ignore:
+            if i[0] == args.chrom_ignore:
+                pass
+            else:
+                combined_read_bed_set.append(i)
+        else:
+            combined_read_bed_set.append(i)
 
     combined_read_bed_dict = {} # Dictionary of reads and their bed coordinates
     read_length_dict = {} # Dictionary of read ids and their lengths
@@ -135,14 +141,17 @@ def bed_maker(bed_list):
         with open(args.data_path + args.target_bed, "r") as gene_targets_bed:
             gene_targets_bed = gene_targets_bed.readlines()
             for row in gene_targets_bed:
-                row = row.strip().split()
-                if row[7] == "gene":
-                    gene = row[3]
-                    #strand = row[5]
-                    gene_bed_dict[gene] = row
-                    outfile.writelines("\t".join(row) + '\n')
-                else:
+                if row[0] == "#":
                     pass
+                else:
+                    row = row.strip().split()
+                    if row[7] == "gene":
+                        gene = row[3]
+                        #strand = row[5]
+                        gene_bed_dict[gene] = row
+                        outfile.writelines("\t".join(row) + '\n')
+                    else:
+                        pass
 
     if args.combined_read_bed_ouput:
         print("Writing combined reads bed file...")
@@ -555,6 +564,7 @@ def get_parser():
     parser.add_argument("--remote_blast", help="Use NCBI remote BLAST function.", required=False, dest="remote_blast", action="store_true")
     parser.add_argument("--remote_db", help="Database to use with remote BLAST.", required=False, dest="remote_db", default="swissprot")
     parser.add_argument("--evalue", help="Expect value cutoff for BLAST.", required=False, default=1e-20, dest="evalue", type=float)
+    parser.add_argument("--chrom_ignore", help="Chromosome ID to ignore during intersecting.", required=False, dest="chrom_ignore")
     args = vars(parser.parse_args())
     return parser
 
