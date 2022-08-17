@@ -6,6 +6,7 @@
 **Advisor: Jim Leebens-Mack**  
 
 **Purpose:**  
+
 PolyCistronFinder takes mapped Iso-seq reads and looks for evidence of  
 polycistronic gene expression, i.e. where at least two predicted gene models are  
 overlapped by an Iso-seq read. A common false positive result can arise from "split"  
@@ -22,8 +23,7 @@ represent subsequences of a "true" gene.
 
 **Usage:** *python PCF.py [options] > <species.out>*  
 
--dp, --data_path  
-Path to data directory. Required.  
+-dp, --data_path  			Path to data directory. Required.  
 -op, --output_path  
 Path to output directory. Required.  
 -bf, --bam_file  
