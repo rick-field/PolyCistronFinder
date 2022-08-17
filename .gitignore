@@ -1,7 +1,8 @@
 *
+!PCF_infiile_maker.py
 !.gitignore
 !PCF.py
-!PCF_species_short.txt
+!PCF.sh
 !PCF_species.txt
 !minimap2.sh
 !samtools_sort.sh

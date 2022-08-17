@@ -214,7 +214,7 @@ def reads_to_multi_genes(intersect_file): # This function finds all reads that i
 
 
 
-def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict):
+def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sample_id_dict):
 
     print("Viewing genes...")
     seen_genes = {} # Dictionary of genes and the genes they've been "seen" with in a given read
@@ -268,7 +268,11 @@ def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict):
         for i in young_ppl_dict[gene]:
             reads = set(gene_to_reads_dict[i]).union(set(reads))
         # Exclude loci that do not pass the filter cutoff
-        if len(reads) >= args.filter:
+	if not args.filter:
+            filter = len(sample_id_dict)
+	else:
+	    filter = args.filter
+        if len(reads) >= filter:
             ppl = str(args.species_prefix + "_PPL" + str(count).zfill(5))
             teen_ppl_dict[ppl] = list(young_ppl_dict[gene])
             ppl_read_counts[ppl] = len(reads)
@@ -599,7 +603,7 @@ if __name__ == "__main__":
     combined_read_bed_set, combined_read_bed_dict, gene_bed_dict, read_length_dict, gene_bed_name = bed_maker(new_bed_list)
     intersects = intersect_finder(combined_read_bed_set, gene_bed_name)
     reads_to_multi_genes_dict, gene_to_reads_dict = reads_to_multi_genes(intersects)
-    mature_ppl_dict, young_ppl_count = ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict)
+    mature_ppl_dict, young_ppl_count = ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sample_id_dict)
 
     if args.ref_pep_fastas: # Extract peptide sequences for all genes in all PPL, fasta format
         pep_fastas = species_fastas(args.ref_pep_fastas)

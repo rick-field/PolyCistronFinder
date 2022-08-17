@@ -17,7 +17,7 @@ then
   mkdir	$SUB_SCRIPT_DIR
 fi
 
-while read species prefix hap dir sample_id in_file
+while read species prefix hap dir sample_id read_file in_file
 do
   OUT_FILE=${in_file%.*}'_sorted.bam'
   OUT_DIR=$dir'data/'$hap'/'
@@ -43,7 +43,7 @@ do
     echo '-o '$OUT_FILE' \'
     echo $in_file
   } > $SUB_SCRIPT
-  echo -e $species'\t'$prefix'\t'$hap'\t'$dir'\t'$sample_id'\t'$OUT_FILE >> $OUT_LIST
+  echo -e $species'\t'$prefix'\t'$hap'\t'$dir'\t'$sample_id'\t'$read_file'\t'$OUT_FILE >> $OUT_LIST
   sbatch $SUB_SCRIPT
   echo $SUB_SCRIPT' Submitted!'
   mv $SUB_SCRIPT $SUB_SCRIPT_DIR
