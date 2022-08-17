@@ -551,7 +551,7 @@ def get_parser():
         help="Text file with input bam files (first column) and sample prefix (second column). bam file must be sorted and filtered by samtools. *MUST EXIST*",
         required=True, dest="bam_file")
     parser.add_argument("-bed", "--target_bed_file", help="e.g. species.gene.bed. Must reside in data path. *MUST EXIST*", required=True, dest="target_bed")
-    parser.add_argument("-f", "--filter", help="Exclude genes in PPL with less than this number of total reads mapped to the locus. *MUST EXIST*", required=True, dest="filter", type=int)
+    parser.add_argument("-f", "--filter", help="Exclude genes in PPL with less than this number of total reads mapped to the locus. If not provided, value of one read per sample average.", required=False, dest="filter", type=int)
     parser.add_argument("-ol", "--read_overlap_percent", help="Minimum overlap required as a fraction of the read length (type=float). *MUST EXIST*", required=True, dest="overlap", type=float)
     parser.add_argument("-p", "--prefix", help="Prefix for output files, probably species or treatment. *MUST EXIST*", required=True, dest="species_prefix")
     parser.add_argument("-ow", "--overwrite_existing_beds", help="If used, PCF will convert .bam files to .bed format and overwrite existing .bed files", required=False,
