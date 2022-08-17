@@ -21,6 +21,7 @@ represent subsequences of a "true" gene.
 5. Submit multiple PCF.py jobs (PCF.sh)  
 
 **Usage:** *python PCF.py [options] > <species.out>*  
+
 -dp, --data_path  
 Path to data directory. Required.  
 -op, --output_path  
