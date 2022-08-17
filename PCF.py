@@ -50,6 +50,7 @@ def starter(bam_file):
         new_bed_list = []
         for line in bam_list.readlines():
             line = line.strip().split()
+            print(line)
             bam_name = line[0]
             read_fasta = line[1]
             sample_ID = line[2]
@@ -268,10 +269,10 @@ def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sa
         for i in young_ppl_dict[gene]:
             reads = set(gene_to_reads_dict[i]).union(set(reads))
         # Exclude loci that do not pass the filter cutoff
-	if not args.filter:
+        if not args.filter:
             filter = len(sample_id_dict)
-	else:
-	    filter = args.filter
+        else:
+            filter = args.filter
         if len(reads) >= filter:
             ppl = str(args.species_prefix + "_PPL" + str(count).zfill(5))
             teen_ppl_dict[ppl] = list(young_ppl_dict[gene])

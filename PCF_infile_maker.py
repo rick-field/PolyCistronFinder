@@ -9,7 +9,6 @@ with open(bam_list, "r") as bams:
     bams = bams.readlines()
     for row in bams:
         row = row.strip().split()
-        bam_file = row[-1]
         prefix = row[1]
         try:
             bam_dict[prefix].append(row)
@@ -30,7 +29,8 @@ for prefix in bam_dict:
     out_file = prefix + "_" + str(bam_dict[prefix][0][2]) + '_bam_list.txt'
     with open(out_file, "w") as filehandle:
         for i in bam_dict[prefix]:
-            filehandle.writelines(i[-1] + i[5] + i[4] + '\n')
+            bam = i[-1].split('/')
+            filehandle.writelines(bam[-1] + '\t' + i[5] + '\t' + i[4] + '\n')
         
         beds = '\t'.join(bed_dict[prefix])
         with open("PCF_samples.txt", "a") as filehandle:
