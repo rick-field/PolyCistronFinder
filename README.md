@@ -22,7 +22,7 @@ represent subsequences of a "true" gene.
 5. Submit multiple PCF.py jobs (PCF.sh)  
 
 **Usage:** *python PCF.py [options] > <species.out>*  
-```
+
 -dp, --data_path <str>  
 *Path to data directory. Required.*  
 -op, --output_path <str>  
@@ -61,4 +61,3 @@ represent subsequences of a "true" gene.
 *Expect value cutoff for BLAST. default = 1e-20*  
 --chrom_ignore <str>  
 *Chromosome ID to ignore during intersecting.*  
-```
