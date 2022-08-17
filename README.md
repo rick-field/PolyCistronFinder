@@ -1,7 +1,7 @@
 PolyCistronFinder (PCF)
 
-Version: 1.0
-Author: Rick Field
+Version: 1.0  
+Author: Rick Field\n
 Email: richard.field@uga.edu
 Advisor: Jim Leebens-Mack
 
