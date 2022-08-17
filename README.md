@@ -1,8 +1,8 @@
 PolyCistronFinder (PCF)
 
 Version: 1.0  
-Author: Rick Field\n
-Email: richard.field@uga.edu
+Author: Rick Field 
+Email: richard.field@uga.edu  
 Advisor: Jim Leebens-Mack
 
 Purpose: PolyCistronFinder takes mapped Iso-seq reads and looks for evidence of
