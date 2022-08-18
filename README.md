@@ -32,8 +32,8 @@ python PCF.py [options] > PCF_species.out
 --reference_nuc_fastas [fasta file]       Fasta file for all genes in reference annotation. Must reside in data path. If provided, fasta sequences for each gene within each PPL will be written to a text file.  
 --name-field [str, int]                   When extracting fasta seqeunces, use the nth ID as sequence name. First argument is the field to use (zero-based index), second argument is the separator in quaotation (i.e. '\t', '.', '|', etc.).  
 --local_blast                             Use local NCBI BLAST to align sequences to a protein database.  
---local_db                                Name of local BLAST database to use. Must include full path or have a shell PATH variable.  
---make_local_db_fastas [fasta file]       Fasta file containing peptide sequences from which a BLAST db can be made.  
+--local_db [str]                          Name of local BLAST database to use. Must include full path or have a shell PATH variable.  
+--make_local_db_fastas [fasta file]       Fasta file containing peptide sequences from which a BLAST db can be made. Incompatible with --local_db  
 --remote_blast                            Use NCBI remote BLAST function.  
 --remote_db [str]                         Database to use with remote BLAST. default = swissprot  
 --evalue [float]                          Expect value cutoff for BLAST. default = 1e-20  
