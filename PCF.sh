@@ -1,11 +1,9 @@
 #!/bin/bash/
 #
 # Author: Rick Field
-#
-# email: richard.field@uga.edu
+# Email: richard.field@uga.edu
 #
 # Purpose: to submit many PCF.py jobs
-
 
 INFILE=$1
 
@@ -31,7 +29,7 @@ do
     echo '#SBATCH --nodes=1'
     echo '#SBATCH --cpus-per-task=1'
     echo '#SBATCH --mem=120gb'
-    echo '#SBATCH --time=4:00:00'
+    echo '#SBATCH --time=24:00:00'
     echo '#SBATCH --output=PCF_'$PREFIX'.out'
     echo '#SBATCH --error=PCF_'$PREFIX'.err'
     echo ''
@@ -45,10 +43,9 @@ do
     echo '-bf '$BAM_LIST' -bed '$DIR'data/'$HAP'/'$GENE_BED' \'
     echo '--reference_pep_fastas '$DIR'data/'$HAP'/'$PROTEINS' -p '$PREFIX' \'
     echo '-ol 0.5 --local_blast --evalue 1e-20 \'
-    echo '--make_local_db_fastas '$LOCAL_DB_FASTAS
+    echo '--make_local_db_fastas '$LOCAL_DB_FASTAS' \'
     echo '> '$OUT_FILE
   } > $SUB_SCRIPT
-#  echo -e $SPECIES'\t'$PREFIX'\t'$HAP'\t'$DIR'\t'$SAMPLE_ID'\t'$READ_FILE'\t'$OUT_FILE >> $OUT_LIST
   sbatch $SUB_SCRIPT
   echo $SUB_SCRIPT' Submitted!'
   mv $SUB_SCRIPT $SUB_SCRIPT_DIR  

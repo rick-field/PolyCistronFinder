@@ -12,7 +12,7 @@ then
 fi
 
 SUB_SCRIPT_DIR=$PWD'/submission_scripts'
-if [ -! $SUB_SCRIPT_DIR ]
+if [ ! -d $SUB_SCRIPT_DIR ]
 then
   mkdir	$SUB_SCRIPT_DIR
 fi

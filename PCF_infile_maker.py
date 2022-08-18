@@ -1,4 +1,4 @@
-#!/bin/bash/ 
+#!/bin/python/
 #
 # Author: Rick Field
 # Email: richard.field@uga.edu
@@ -13,8 +13,9 @@ import sys
 
 bam_list = str(sys.argv[1])
 bed_list = str(sys.argv[2])
-
 bam_dict = {}
+bed_dict = {}
+
 with open(bam_list, "r") as bams:
     bams = bams.readlines()
     for row in bams:
@@ -25,14 +26,12 @@ with open(bam_list, "r") as bams:
         except KeyError:
             bam_dict[prefix] = [row]
 
-bed_dict = {}
 with open(bed_list, "r") as beds:
     beds = beds.readlines()
     for row in beds:
         row = row.strip().split()
         prefix = row[0]
         bed_dict[prefix] = [row[1], row[2]]
-
 
 for prefix in bam_dict:
     basics = '\t'.join(bam_dict[prefix][0][0:4])

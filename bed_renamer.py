@@ -1,7 +1,6 @@
 import sys
 
 bed = str(sys.argv[1])
-bed_name = bed.strip(".bed")
 bed = (open(bed, "r")).readlines()
 
 for i in bed:
