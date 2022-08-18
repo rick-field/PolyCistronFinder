@@ -1,3 +1,5 @@
+## PolyCistronFinder  
+
 **PolyCistronFinder (PCF)** takes mapped Iso-seq reads and looks for evidence of  
 polycistronic gene expression, i.e. where at least two predicted gene models are  
 overlapped by an Iso-seq read. A common false positive result can arise from "split"  
@@ -12,10 +14,10 @@ represent subsequences of a "true" gene.
 4. Prepare input file for bacth PCF.py runs  
 5. Submit multiple PCF.py jobs  
 
-```**Usage:** *python PCF.py [options] > <species.out>*  
+```
+**Usage:** *python PCF.py [options] > <species.out>*  
 
--dp, --data_path *str*  
-*Path to data directory. Required.*  
+-dp, --data_path *str*                       *Path to data directory. Required.*  
 -op, --output_path *str*  
 *Path to output directory. Required.*  
 -bf, --bam_file *text file*  
