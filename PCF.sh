@@ -6,16 +6,14 @@
 # Purpose: to submit many PCF.py jobs
 
 INFILE=$1
-
 LOCAL_DB_FASTAS='/scratch/rdf85141/PPL/blast_db/Acomosus_Athaliana_Creinhardtii_Gmax_Ptrichocarpa_Osativa_Slycopersicum_Vvinifera_Zmays.fa'
-
 SUB_SCRIPT_DIR=$PWD'/submission_scripts'
 if [ ! -d $SUB_SCRIPT_DIR ]
 then
   mkdir $SUB_SCRIPT_DIR
 fi
 
-while read SPECIES PREFIX HAP DIR GENE_BED PROTEINS BAM_LIST
+while read SPECIES PREFIX HAP DIR GENE_BED PROTEINS BAM_LIST CP_GENOME
 do
   OUT_FILE='PCF_'$SPECIES'_'$HAP'.out'
   DATA_DIR=$DIR'data/'$HAP'/'
@@ -40,9 +38,9 @@ do
     echo 'ml pandas/0.25.3-intel-2019b-Python-3.7.4'
     echo ''
     echo 'python PCF.py -dp '$DATA_DIR' -op '$OUT_DIR' \'
-    echo '-bf '$BAM_LIST' -bed '$DIR'data/'$HAP'/'$GENE_BED' \'
-    echo '--reference_pep_fastas '$DIR'data/'$HAP'/'$PROTEINS' -p '$PREFIX' \'
-    echo '-ol 0.5 --local_blast --evalue 1e-20 \'
+    echo '-bf '$BAM_LIST' -bed '$GENE_BED' \'
+    echo '--reference_pep_fastas '$PROTEINS' -p '$PREFIX' \'
+    echo '-ol 0.5 --local_blast --evalue 1e-20 --chrom_ignore '$CP_GENOME' \'
     echo '--make_local_db_fastas '$LOCAL_DB_FASTAS' \'
     echo '> '$OUT_FILE
   } > $SUB_SCRIPT
