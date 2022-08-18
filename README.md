@@ -18,10 +18,12 @@ represent subsequences of a "true" gene.
 **Usage:**  
 
 ```
-python PCF.py [options] > <species.out>*  
+python PCF.py [options] > <species.out>  
 ```
 
-**Options:**  
+**Options:**
+
+```  
 -dp --data_path [str]                     *Path to data directory. Required.*  
 -op --output_path [str]                   *Path to output directory. Required.*  
 -bf --bam_file [text file]                *Text file with input bam files (first column) and sample prefix (second column). bam file must be sorted and filtered by samtools. Required.*  
