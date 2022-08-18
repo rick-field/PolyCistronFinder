@@ -1,5 +1,4 @@
 # PCF.py
-# TEST TEST
 #
 # Author: Rick Field
 #
