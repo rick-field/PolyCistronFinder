@@ -135,24 +135,32 @@ def bed_maker(bed_list):
             combined_read_bed_dict[id] = [read]
 
     gene_bed_dict = {} # Dictinoary of genes and their .bed file lines
-    gene_bed_name = [i for i in args.target_bed.split(".")[:-1]]
-    gene_bed_name.append("gene_line_only.bed")
-    gene_bed_name = ".".join(gene_bed_name)
-    with open(args.data_path + gene_bed_name, "w") as outfile:
-        with open(args.data_path + args.target_bed, "r") as gene_targets_bed:
-            gene_targets_bed = gene_targets_bed.readlines()
-            for row in gene_targets_bed:
-                if row[0] == "#":
-                    pass
-                else:
-                    row = row.strip().split()
-                    if row[7] == "gene":
-                        gene = row[3]
-                        #strand = row[5]
-                        gene_bed_dict[gene] = row
-                        outfile.writelines("\t".join(row) + '\n')
-                    else:
+    if args.slim_bed:
+        gene_bed_name = [i for i in args.target_bed.split(".")[:-1]]
+        gene_bed_name.append("gene_line_only.bed")
+        gene_bed_name = ".".join(gene_bed_name)
+        with open(args.data_path + gene_bed_name, "w") as outfile:
+            with open(args.data_path + args.target_bed, "r") as gene_targets_bed:
+                gene_targets_bed = gene_targets_bed.readlines()
+                for row in gene_targets_bed:
+                    if row[0] == "#":
                         pass
+                    else:
+                        row = row.strip().split()
+                        if row[7] == "gene":
+                            gene = row[3]
+                            gene_bed_dict[gene] = row
+                            outfile.writelines("\t".join(row) + '\n')
+                        else:
+                            pass
+    else:
+        gene_bed_name = args.target_bed
+        with open(args.data_path + gene_bed_name, "r") as gene_targets_bed:
+            if row[7] == "gene":
+                gene = row[3]
+                gene_bed_dict[gene] = row
+            else:
+                pass
 
     if args.combined_read_bed_ouput:
         print("Writing combined reads bed file...")
@@ -570,6 +578,7 @@ def get_parser():
     parser.add_argument("--remote_db", help="Database to use with remote BLAST.", required=False, dest="remote_db", default="swissprot")
     parser.add_argument("--evalue", help="Expect value cutoff for BLAST.", required=False, default=1e-20, dest="evalue", type=float)
     parser.add_argument("--chrom_ignore", help="Chromosome ID to ignore during intersecting.", required=False, dest="chrom_ignore")
+    parser.add_argument("--slim_bed", help="Make a target bed file with only 'gene' features.", required=False, dest="slim_bed")
     args = vars(parser.parse_args())
     return parser
 
