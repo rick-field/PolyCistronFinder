@@ -13,12 +13,16 @@
 # Dependencies: pybedtools, pandas, biopython
 #
 # Example usage:
-# $ python PCF.py -dp ../yucca/ -op ../yucca/Yalo_PPL/ \
-# -bf bam_list.txt -bed YaloifoliaYa24Inokov2.1.primaryTrs.bed \
-# --reference_pep_fastas YaloifoliaYa24Inokov2.1.primaryTrs.pep.fa -p Yalo \
-# -f 12 -ol 0.5 --local_blast --evalue 1e-20 \
-# --make_local_db_fastas Athaliana_TAIR10_Zmays_B73_5.0_Oryza_7.fa
 #
+# python PCF.py -dp [path to data dir] -op [path to output dir] -bf [text file
+# with bam file names] -bed --target_bed_file [target bed file] -f [int]
+# -ol [float] -p [species prefix] -ow -cb --reference_pep_fastas [pep.fa]
+# --reference_nuc_fastas [cds.fa] --name-field [e.g. 2 ':'] --local_blast
+# --local_db [local.db] --make_local_db_fastas [other_species_pep.fa]
+# --remote_blast --remote_db [remote.db] --evalue [float]
+# --chrom_ignore [chrom ID] --slim_bed
+
+
 
 
 
