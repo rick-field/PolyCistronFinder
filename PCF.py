@@ -53,7 +53,6 @@ def starter(bam_file):
         new_bed_list = []
         for line in bam_list.readlines():
             line = line.strip().split()
-            print(line)
             bam_name = line[0]
             read_fasta = line[1]
             sample_ID = line[2]
