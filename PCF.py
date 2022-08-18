@@ -2,7 +2,7 @@
 #
 # Author: Rick Field
 #
-# PolyCistronFinder (PCF)** takes mapped Iso-seq reads and looks for evidence 
+# PolyCistronFinder (PCF) takes mapped Iso-seq reads and looks for evidence 
 # of polycistronic gene expression, i.e. where at least two predicted gene models 
 # are overlapped by an Iso-seq read. A common false positive result can arise 
 # from "split" gene models in the genome annotation. Therefore, PCF can 
