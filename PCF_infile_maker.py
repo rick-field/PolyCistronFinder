@@ -1,5 +1,15 @@
-import sys
+#!/bin/bash/ 
+#
+# Author: Rick Field
+# Email: richard.field@uga.edu
+#
+# PCF_infile_maker.py produces a file for using when submitting multiple PCF.py jobs. 
+# The first input file should have rows with the following fields: species, prefix, haplotype,  
+# data directory, sample ID, read file, bam file.
+# The second file should have sample ID, gene model annotation (bed format), and fasta file  
+# of protein seqeunces for your species.
 
+import sys
 
 bam_list = str(sys.argv[1])
 bed_list = str(sys.argv[2])
