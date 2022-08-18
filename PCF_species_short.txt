@@ -1,1 +1,0 @@
-Y_aloifolia	Yalo	hap1	/scratch/rdf85141/PPL/yalo/	Yucca_aloifolia_var_Ya24Inoko.mainGenome.cpGenome.fasta	yalo_reads.txt
