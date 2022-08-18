@@ -2,12 +2,12 @@
 #
 # Author: Rick Field
 #
-# Project: Surveying Iso-seq data to discover putative polycistronic loci.
-# This program takes multiple bam files of mapped Iso-seq reads (from minimap2)
-# and find instances where two or more gene models are overlapped by a minimum
-# number of reads. Optionally, you can perform BLAST alignments against remote
-# or custom protein databses and assess them for split gene models in the
-# reference genome annotation. Such cases are false positives to be removed.
+# PolyCistronFinder (PCF)** takes mapped Iso-seq reads and looks for evidence 
+# of polycistronic gene expression, i.e. where at least two predicted gene models 
+# are overlapped by an Iso-seq read. A common false positive result can arise 
+# from "split" gene models in the genome annotation. Therefore, PCF can 
+# optionally perform local or remote BLASTp alignments and analyze them to infer 
+# if the gene models likely represent subsequences of a "true" gene. 
 #
 # Dependencies: pybedtools, pandas, biopython
 #
