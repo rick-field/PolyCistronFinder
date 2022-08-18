@@ -2,9 +2,9 @@
 
 **PolyCistronFinder (PCF)** takes mapped Iso-seq reads and looks for evidence of polycistronic  
 gene expression, i.e. where at least two predicted gene models are overlapped by an Iso-seq  
-read. A common false positive result can arise from "split" gene models in the genome  
-annotation. Therefore, PCF can optionally perform local or remote BLASTp alignments and analyze  
-them to infer if the gene models likely represent subsequences of a "true" gene.  
+read. A common false positive result can arise from "split" gene models in the genome annotation.  
+Therefore, PCF can optionally perform local or remote BLASTp alignments and analyze them to infer  
+if the gene models likely represent subsequences of a "true" gene.  
 
 **Generalized workflow:**  
 1. Map reads to genomes (*minimap2*)  
