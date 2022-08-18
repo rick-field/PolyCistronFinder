@@ -17,7 +17,7 @@ alignments to determine if the gene models likely represent subsequences of a "t
 **Usage:**  
 
 ```
-python PCF.py [options] > <species.out>  
+python PCF.py [options] > PCF_species.out  
 ```
 
 **Options:**
