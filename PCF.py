@@ -2,12 +2,12 @@
 #
 # Author: Rick Field
 #
-# PolyCistronFinder (PCF) takes mapped Iso-seq reads and looks for evidence 
-# of polycistronic gene expression, i.e. where at least two predicted gene models 
-# are overlapped by an Iso-seq read. A common false positive result can arise 
-# from "split" gene models in the genome annotation. Therefore, PCF can 
-# optionally perform local or remote BLASTp alignments and analyze them to infer 
-# if the gene models likely represent subsequences of a "true" gene. 
+# PolyCistronFinder (PCF) takes mapped Iso-seq reads and looks for evidence
+# of polycistronic gene expression, i.e. where at least two predicted gene models
+# are overlapped by an Iso-seq read. A common false positive result can arise
+# from "split" gene models in the genome annotation. Therefore, PCF can
+# optionally perform local or remote BLASTp alignments and analyze them to infer
+# if the gene models likely represent subsequences of a "true" gene.
 #
 # Dependencies: pybedtools, pandas, biopython
 #
@@ -19,7 +19,7 @@
 # --reference_nuc_fastas [cds.fa] --name-field [e.g. 2 ':'] --evalue [float]
 # --chrom_ignore [chrom ID] --local_blast --local_db [local.db]
 # --make_local_db_fastas [other_species_pep.fa] --remote_blast
-# --remote_db [remote.db] --slim_bed -ow -cb 
+# --remote_db [remote.db] --slim_bed -ow -cb
 
 
 
@@ -158,11 +158,13 @@ def bed_maker(bed_list):
     else:
         gene_bed_name = args.target_bed
         with open(args.data_path + gene_bed_name, "r") as gene_targets_bed:
-            if row[7] == "gene":
-                gene = row[3]
-                gene_bed_dict[gene] = row
-            else:
-                pass
+            for row in gene_targets_bed:
+                row = row.strip().split()
+                if row[7] == "gene":
+                    gene = row[3]
+                    gene_bed_dict[gene] = row
+                else:
+                    pass
 
     if args.combined_read_bed_ouput:
         print("Writing combined reads bed file...")
