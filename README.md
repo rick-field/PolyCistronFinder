@@ -8,10 +8,10 @@ or remote BLASTp and analyze the alignments to determine if the gene models like
 represent subsequences of a "true" gene.  
 
 **Generalized workflow:**  
-1. Map reads to genomes  
-2. Sort and filter bam files  
-3. Prepare gff3 files for PCF.py  
-4. Prepare input file for bacth PCF.py runs  
+1. Map reads to genomes (*minimap2*)  
+2. Sort and filter bam files (*samtools*)  
+3. Prepare gff3 files for PCF.py (*PCF_gff3_prep.sh*)  
+4. Prepare input file for bacth PCF.py runs (*PCF_infile_maker.py*)  
 5. Submit multiple PCF.py jobs  
 
 
