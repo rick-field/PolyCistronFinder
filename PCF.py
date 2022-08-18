@@ -355,6 +355,10 @@ def species_fastas(pep_fasta):
     else:
         pass
 
+    with open(agrs.species_prefix + "_pep_fasta_dict.txt", "w") as filehandle:
+        for gene in pep_fasta_dict:
+            filehandle.writelines(">" + str(gene) + '\n' + str(pep_fasta_dict[gene] + '\n')
+
     return pep_fasta_dict
 
 
