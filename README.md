@@ -1,13 +1,4 @@
-# PolyCistronFinder (PCF)
-
-**Version: 1.0**  
-**Author: Rick Field**  
-**Email: richard.field@uga.edu**  
-**Advisor: Jim Leebens-Mack**  
-
-**Purpose:**  
-
-PolyCistronFinder takes mapped Iso-seq reads and looks for evidence of  
+**PolyCistronFinder (PCF)** takes mapped Iso-seq reads and looks for evidence of  
 polycistronic gene expression, i.e. where at least two predicted gene models are  
 overlapped by an Iso-seq read. A common false positive result can arise from "split"  
 gene models in the genome annotation. Therefore, PCF can optionally perform local  
@@ -15,13 +6,13 @@ or remote BLASTp and analyze the alignments to determine if the gene models like
 represent subsequences of a "true" gene.  
 
 **Generalized workflow:**  
-1. Map reads to genomes (minimap2.sh)  
-2. Sort and filter bam files (samtools_sort.sh, samtools_view_256.sh, samtools_view_2048.sh)  
-3. Prepare gff3 files for PCF.py (PCF_gff3_prep.sh)  
-4. Prepare input file for bacth PCF.py runs (PCF_infile_maker.py)  
-5. Submit multiple PCF.py jobs (PCF.sh)  
+1. Map reads to genomes  
+2. Sort and filter bam files  
+3. Prepare gff3 files for PCF.py  
+4. Prepare input file for bacth PCF.py runs  
+5. Submit multiple PCF.py jobs  
 
-**Usage:** *python PCF.py [options] > <species.out>*  
+```**Usage:** *python PCF.py [options] > <species.out>*  
 
 -dp, --data_path *str*  
 *Path to data directory. Required.*  
@@ -61,3 +52,4 @@ represent subsequences of a "true" gene.
 *Expect value cutoff for BLAST. default = 1e-20*  
 --chrom_ignore *str*  
 *Chromosome ID to ignore during intersecting.*  
+```

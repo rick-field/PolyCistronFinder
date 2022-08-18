@@ -17,11 +17,11 @@ then
   mkdir	$SUB_SCRIPT_DIR
 fi
 
-while read species prefix hap dir sample_id read_file in_file
+while read SPECIES PREFIX HAP DIR SAMPLE_ID READ_FILE IN_FILE
 do
-  OUT_FILE=${in_file%.*}'_sorted.bam'
-  OUT_DIR=$dir'data/'$hap'/'
-  SUB_SCRIPT=$prefix'_'$hap'_'$sample_id'_samtools_sort.sh'
+  OUT_FILE=${IN_FILE%.*}'_sorted.bam'
+  OUT_DIR=$DIR'data/'$HAP'/'
+  SUB_SCRIPT=$PREFIX'_'$HAP'_'$SAMPLE_ID'_samtools_sort.sh'
   {
     echo '#!/bin/bash'
     echo '#SBATCH --job-name='$SUB_SCRIPT
@@ -40,10 +40,10 @@ do
     echo ''
     echo 'samtools sort -@ 4 \'
     echo '-O bam \'
-    echo '-o '$OUT_FILE' \'
-    echo $in_file
+    echo '-o '$OUT_DIR$OUT_FILE' \'
+    echo $OUT_DIR$IN_FILE
   } > $SUB_SCRIPT
-  echo -e $species'\t'$prefix'\t'$hap'\t'$dir'\t'$sample_id'\t'$read_file'\t'$OUT_FILE >> $OUT_LIST
+  echo -e $SPECIES'\t'$PREFIX'\t'$HAP'\t'$DIR'\t'$SAMPLE_ID'\t'$READ_FILE'\t'$OUT_FILE >> $OUT_LIST
   sbatch $SUB_SCRIPT
   echo $SUB_SCRIPT' Submitted!'
   mv $SUB_SCRIPT $SUB_SCRIPT_DIR

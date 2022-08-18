@@ -7,11 +7,6 @@
 # Purpose: to submit many PCF.py jobs
 
 
-
-ml pybedtools/0.8.1-foss-2019b
-ml Biopython/1.75-intel-2019b-Python-3.7.4
-ml pandas/0.25.3-intel-2019b-Python-3.7.4
-
 INFILE=$1
 
 LOCAL_DB_FASTAS='/scratch/rdf85141/PPL/blast_db/Acomosus_Athaliana_Creinhardtii_Gmax_Ptrichocarpa_Osativa_Slycopersicum_Vvinifera_Zmays.fa'
@@ -25,7 +20,7 @@ fi
 while read SPECIES PREFIX HAP DIR GENE_BED PROTEINS BAM_LIST
 do
   OUT_FILE='PCF_'$SPECIES'_'$HAP'.out'
-  DATA_DIR=$DIR'/data/'$HAP'/'
+  DATA_DIR=$DIR'data/'$HAP'/'
   OUT_DIR=$DIR'analysis/'$HAP'/'
   SUB_SCRIPT=$PREFIX'_PCF.sh'
   {
@@ -47,8 +42,8 @@ do
     echo 'ml pandas/0.25.3-intel-2019b-Python-3.7.4'
     echo ''
     echo 'python PCF.py -dp '$DATA_DIR' -op '$OUT_DIR' \'
-    echo '-bf '$BAM_LIST' -bed '$DIR'/data/'$HAP'/'$GENE_BED' \'
-    echo '--reference_pep_fastas '$DIR'/data/'$HAP'/'$PROTEINS' -p '$PREFIX' \'
+    echo '-bf '$BAM_LIST' -bed '$DIR'data/'$HAP'/'$GENE_BED' \'
+    echo '--reference_pep_fastas '$DIR'data/'$HAP'/'$PROTEINS' -p '$PREFIX' \'
     echo '-ol 0.5 --local_blast --evalue 1e-20 \'
     echo '--make_local_db_fastas '$LOCAL_DB_FASTAS
     echo '> '$OUT_FILE

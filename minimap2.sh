@@ -47,7 +47,7 @@ do
           echo $dir'data/reads/'$read_file' \'
           echo '> '$OUT_DIR$SAM
         } > $SUB_SCRIPT
-        echo -e $species'\t'$prefix'\t'$hap'\t'$dir'\t'$sample_ID'\t'$read_file'\t'$OUT_DIR$SAM >> $OUT_FILE
+        echo -e $species'\t'$prefix'\t'$hap'\t'$dir'\t'$sample_ID'\t'$read_file'\t'$SAM >> $OUT_FILE
         sbatch $SUB_SCRIPT
         echo $SUB_SCRIPT' Submitted!'
         mv $SUB_SCRIPT $SUB_SCRIPT_DIR

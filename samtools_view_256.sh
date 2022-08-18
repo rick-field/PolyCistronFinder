@@ -41,8 +41,8 @@ do
     echo 'samtools view -@ 4 \'
     echo '-F 256 \'
     echo '-O bam \'
-    echo '-o '$OUT_FILE' \'
-    echo $IN_FILE
+    echo '-o $OUT_DIR$OUT_FILE' \'
+    echo $OUT_DIR$IN_FILE
   } > $SUB_SCRIPT
   echo -e $SPECIES'\t'$PREFIX'\t'$HAP'\t'$DIR'\t'$SAMPLE_ID'\t'$READ_FILE'\t'$OUT_FILE >> $OUT_LIST
   sbatch $SUB_SCRIPT
