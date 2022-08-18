@@ -10,7 +10,7 @@ alignments to determine if the gene models likely represent subsequences of a "t
 1. Map reads to genomes (*minimap2*)  
 2. Sort and filter bam files (*samtools*)  
 3. Prepare gff3 files for PCF.py (*PCF_gff3_prep.sh*)  
-4. Prepare input file for bacth PCF.py runs (*PCF_infile_maker.py*)  
+4. Prepare input file for batch PCF.py runs (*PCF_infile_maker.py*)  
 5. Submit multiple PCF.py jobs  
 
 
