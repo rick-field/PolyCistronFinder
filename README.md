@@ -37,7 +37,7 @@ python PCF.py [options] > PCF_species.out
 --remote_blast                            Use NCBI remote BLAST function.  
 --remote_db [str]                         Database to use with remote BLAST. default = swissprot  
 --evalue [float]                          Expect value cutoff for BLAST. default = 1e-20  
---gap_open                                BLAST penalty for opening a gap in an alignment
---gap_extend                              BLAST penalty for extending a gap in an alignment
+--gap_open [int]                          BLAST penalty for opening a gap in an alignment
+--gap_extend [int]                        BLAST penalty for extending a gap in an alignment
 --chrom_ignore [str]                      Chromosome ID to ignore during intersecting.  
 ```
