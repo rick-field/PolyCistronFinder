@@ -35,7 +35,7 @@ with open(bed_list, "r") as beds:
 
 for prefix in bam_dict:
     basics = '\t'.join(bam_dict[prefix][0][0:4])
-    out_file = prefix + "_" + str(bam_dict[prefix][0][2]) + '_bam_list.txt'
+    out_file = bam_dict[prefix][3] + bam_dict[prefix][2] + '/' +  prefix + "_" + str(bam_dict[prefix][0][2]) + '_bam_list.txt'
     with open(out_file, "w") as filehandle:
         for i in bam_dict[prefix]:
             bam = i[-1].split('/')

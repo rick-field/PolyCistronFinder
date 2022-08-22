@@ -149,7 +149,7 @@ def bed_maker(bed_list):
                         pass
                     else:
                         row = row.strip().split()
-                        if row[7] == "gene":
+                        if row[7] == "mRNA":
                             gene = row[3]
                             gene_bed_dict[gene] = row
                             outfile.writelines("\t".join(row) + '\n')
@@ -160,7 +160,7 @@ def bed_maker(bed_list):
         with open(args.data_path + gene_bed_name, "r") as gene_targets_bed:
             for row in gene_targets_bed:
                 row = row.strip().split()
-                if row[7] == "gene":
+                if row[7] == "mRNA":
                     gene = row[3]
                     gene_bed_dict[gene] = row
                 else:
@@ -228,7 +228,6 @@ def reads_to_multi_genes(intersect_file): # This function finds all reads that i
 
 
 def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sample_id_dict):
-
     print("Viewing genes...")
     seen_genes = {} # Dictionary of genes and the genes they've been "seen" with in a given read
     for read in sorted(list(reads_to_multi_genes_dict.keys())):
@@ -355,10 +354,6 @@ def species_fastas(pep_fasta):
     else:
         pass
 
-    with open(agrs.species_prefix + "_pep_fasta_dict.txt", "w") as filehandle:
-        for gene in pep_fasta_dict:
-            filehandle.writelines(">" + str(gene) + '\n' + str(pep_fasta_dict[gene] + '\n')
-
     return pep_fasta_dict
 
 
@@ -389,7 +384,7 @@ def ppl_fastas(pep_fasta_dict, ppl):
 
 def make_blast_db(protein_fasta):
 
-    print("Building BLAST database from " + args.data_path + protein_fasta + "...")
+    print("Building BLAST database from " + protein_fasta + "...")
     blast_db_name = str(protein_fasta + ".blastdb")
     cmd = str("makeblastdb -out " + blast_db_name + " -dbtype prot -in " + protein_fasta)
     print(cmd)
@@ -404,9 +399,9 @@ def ppl_blast(ppl, blastdb):
     xml_out_path = os.path.join(blast_out_dir, ppl + "_results.xml")
     query = os.path.join(args.output_path, args.species_prefix + "_PPL_fasta_sequences", ppl + ".faa")
     if args.local_blast:
-        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + args.data_path + blastdb + " -evalue " + str(args.evalue) + " -gapopen 6 -gapextend 2")
+        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + blastdb + " -evalue " + str(args.evalue) + " -gapopen " + args.gap_open + " -gapextend " + args.gap_extend)
     elif args.remote_blast:
-        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + args.data_path + blastdb + " -evalue " + str(args.evalue) + " -gapopen 6 -gapextend 2" + " -remote")
+        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + blastdb + " -evalue " + str(args.evalue) + " -gapopen " + args.gap_open + " -gapextend " + args.gap_extend + " -remote")
 
     print(cmd)
     out = subprocess.run(cmd, shell=True, capture_output=True, text=True)
@@ -585,6 +580,8 @@ def get_parser():
     parser.add_argument("--remote_blast", help="Use NCBI remote BLAST function.", required=False, dest="remote_blast", action="store_true")
     parser.add_argument("--remote_db", help="Database to use with remote BLAST.", required=False, dest="remote_db", default="swissprot")
     parser.add_argument("--evalue", help="Expect value cutoff for BLAST.", required=False, default=1e-20, dest="evalue", type=float)
+    parser.add_argument("--gap_open", help="Gap open penalty for BLASTp.", required=False, dest="gap_open", type=int)
+    parser.add_argument("--gap_extend", help="Gap extend penalty for BLASTp.", required=False, dest="gap_extend", type=int)
     parser.add_argument("--chrom_ignore", help="Chromosome ID to ignore during intersecting.", required=False, dest="chrom_ignore")
     parser.add_argument("--slim_bed", help="Make a target bed file with only 'gene' features.", required=False, dest="slim_bed")
     args = vars(parser.parse_args())
@@ -780,7 +777,7 @@ if __name__ == "__main__":
             "ppl":row[7]}, index=[index])
         df = pd.concat([new_df, df], ignore_index=True)
         index += 1
-    df.sort_values(by=["chr", "start", "read", "ppl"], ascending=True, kind="stable", inplace=True, ignore_index=True)
+    df.sort_values(by=["chr", "start", "read", "ppl"], ascending=True, kind="stable", inplace=True)#, ignore_index=True)
     df.to_csv(ppl_out_dir + "/" + args.species_prefix + "_PPL_mature_reads.bed", sep='\t', header=False, index=False)
 
     stop_time = datetime.datetime.now()
