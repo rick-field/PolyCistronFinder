@@ -139,7 +139,7 @@ def bed_maker(bed_list):
     gene_bed_dict = {} # Dictinoary of genes and their .bed file lines
     if args.slim_bed:
         gene_bed_name = [i for i in args.target_bed.split(".")[:-1]]
-        gene_bed_name.append("gene_line_only.bed")
+        gene_bed_name.append("mRNA_line_only.bed")
         gene_bed_name = ".".join(gene_bed_name)
         with open(args.data_path + gene_bed_name, "w") as outfile:
             with open(args.data_path + args.target_bed, "r") as gene_targets_bed:
@@ -324,19 +324,21 @@ def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sa
 
 
 
-def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict):
+def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict):
     ppl_longest_read_dict = {}
     for gene in mature_ppl_dict[ppl][:-1]:
         for read in gene_to_reads_dict[gene]:
             length = 0
             longest = ""
+            sample_ID = ""
             if int(read_length_dict[read]) > length:
                 longest = read_length_dict[read]
                 length = int(read_length_dict[read])
+                sample_ID = combined_read_bed_dict[read][-1]
             else:
                 pass
 
-        ppl_longest_read_dict[gene] = read
+        ppl_longest_read_dict[gene] = [read, sample_ID]
 
     return ppl_longest_read_dict
 
@@ -563,7 +565,7 @@ class PPL:
         for gene in self.genes:
             reads = reads.union(set(gene_to_reads_dict[gene]))
         self.reads = [read for read in list(reads)]
-        self.longest_reads = longest_read_finder(self.ID, mature_ppl_dict, gene_to_reads_dict)
+        self.longest_reads = longest_read_finder(self.ID, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict)
 
     def ppl_blaster(self, ID):
         self.pep_fasta_file = ppl_fastas(pep_fastas, self.ID)
@@ -638,10 +640,6 @@ if __name__ == "__main__":
     intersects = intersect_finder(combined_read_bed_set, gene_bed_name)
     reads_to_multi_genes_dict, gene_to_reads_dict = reads_to_multi_genes(intersects)
     mature_ppl_dict, young_ppl_count = ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sample_id_dict)
-#    longest_read_finder(mature_ppl_dict, gene_to_reads_dict)
-#    ppl_longest_read_dict = longest_read_finder(mature_ppl_dict, gene_to_reads_dict)
-#    for ppl in ppl_longest_read_dict:
-#        print(ppl_longest_read_dict[ppl])
 
     if args.ref_pep_fastas: # Extract peptide sequences for all genes in all PPL, fasta format
         pep_fastas = species_fastas(args.ref_pep_fastas)
@@ -685,7 +683,7 @@ if __name__ == "__main__":
         print("--- " + ppl.ID + " ---")
         with open(ppl_out_dir + "/" + args.species_prefix + "_PPL_longest_reads.txt", "a") as filehandle:
             for gene in ppl.longest_reads:
-                filehandle.writelines(ppl.ID + '\t' + gene + '\t' + str(ppl.longest_reads[gene]) + '\n')
+                filehandle.writelines(ppl.ID + '\t' + gene + '\t' + str(ppl.longest_reads[gene][0]) + '\t' + str(ppl.longest_reads[gene][1][-1]) + '\n')
 
         if args.local_blast or args.remote_blast:
             ppl.ppl_blaster(ppl)
