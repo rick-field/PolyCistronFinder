@@ -326,9 +326,6 @@ def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sa
 
 def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict):
     ppl_longest_read_dict = {}
-#    for ppl in mature_ppl_dict:
-#    ppl_longest_read_dict[ppl] = {}
-#        print(ppl, mature_ppl_dict[ppl])
     for gene in mature_ppl_dict[ppl][:-1]:
         for read in gene_to_reads_dict[gene]:
             length = 0
