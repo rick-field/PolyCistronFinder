@@ -49,7 +49,7 @@ from Bio.pairwise2 import format_alignment
 
 def starter(bam_file):
     sample_id_dict = {}
-    with open(args.data_path + bam_file, "r") as bam_list:
+    with open(bam_file, "r") as bam_list:
         new_bed_list = []
         for line in bam_list.readlines():
             line = line.strip().split()
@@ -399,9 +399,9 @@ def ppl_blast(ppl, blastdb):
     xml_out_path = os.path.join(blast_out_dir, ppl + "_results.xml")
     query = os.path.join(args.output_path, args.species_prefix + "_PPL_fasta_sequences", ppl + ".faa")
     if args.local_blast:
-        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + blastdb + " -evalue " + str(args.evalue) + " -gapopen " + args.gap_open + " -gapextend " + args.gap_extend)
+        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + blastdb + " -evalue " + str(args.evalue) + " -gapopen " + str(args.gap_open) + " -gapextend " + str(args.gap_extend))
     elif args.remote_blast:
-        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + blastdb + " -evalue " + str(args.evalue) + " -gapopen " + args.gap_open + " -gapextend " + args.gap_extend + " -remote")
+        cmd = str("blastp -out " + xml_out_path + " -outfmt 5 -query " + query + " -db " + blastdb + " -evalue " + str(args.evalue) + " -gapopen " + str(args.gap_open) + " -gapextend " + str(args.gap_extend) + " -remote")
 
     print(cmd)
     out = subprocess.run(cmd, shell=True, capture_output=True, text=True)

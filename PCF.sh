@@ -6,30 +6,30 @@
 # Purpose: to submit many PCF.py jobs
 
 #INFILE=$1
-LOCAL_DB_FASTAS='/scracth/rdf85141/PPL/blast_db/Acomosus_Athaliana_Creinhardtii_Gmax_Ptrichocarpa_Osativa_Slycopersicum_Vvinifera_Zmays.fa'
+LOCAL_DB_FASTAS='/scratch/rdf85141/PPL/blast_db/ref_seq/plant_refseq.faa'
 SUB_SCRIPT_DIR=$PWD'/submission_scripts'
 if [ ! -d $SUB_SCRIPT_DIR ]
 then
   mkdir $SUB_SCRIPT_DIR
 fi
 
-while read SPECIES PREFIX HAP DIR GENE_BED PROTEINS BAM_LIST CP_GENOME
+while read SPECIES PREFIX HAP DIR GENE_BED PROTEINS CP_GENOME BAM_LIST
 do
-  OUT_FILE='PCF_'$SPECIES'_'$HAP'.out'
+  OUT_FILE='PCF_'$PREFIX'_'$HAP'.out'
   DATA_DIR=$DIR'data/'$HAP'/'
-  OUT_DIR=$DIR'analysis/'$HAP'/'
-  SUB_SCRIPT=$PREFIX'_PCF.sh'
+  OUT_DIR=$DIR'analyses/'$HAP'/'
+  SUB_SCRIPT=$PREFIX'_'$HAP'_PCF.sh'
   {
     echo '#!/bin/bash'
-    echo '#SBATCH --job-name='$PREFIX'_PCF'
+    echo '#SBATCH --job-name='$PREFIX'_'$HAP'_PCF'
     echo '#SBATCH --partition=batch'
     echo '#SBATCH --ntasks=1'
     echo '#SBATCH --nodes=1'
     echo '#SBATCH --cpus-per-task=1'
     echo '#SBATCH --mem=120gb'
-    echo '#SBATCH --time=24:00:00'
-    echo '#SBATCH --output=PCF_'$PREFIX'.out'
-    echo '#SBATCH --error=PCF_'$PREFIX'.err'
+    echo '#SBATCH --time=72:00:00'
+    echo '#SBATCH --output=PCF_'$PREFIX'_'$HAP'.out'
+    echo '#SBATCH --error=PCF_'$PREFIX'_'$HAP'.err'
     echo ''
     echo 'cd $SLURM_SUBMIT_DIR'
     echo ''
@@ -42,7 +42,7 @@ do
     echo '-bf '$BAM_LIST' -bed '$GENE_BED' \'
     echo '--reference_pep_fastas '$PROTEINS' -p '$PREFIX' \'
     echo '-ol 0.5 --local_blast --evalue 1e-20 --chrom_ignore '$CP_GENOME' \'
-    echo '--make_local_db_fastas '$LOCAL_DB_FASTAS' --gap_open 11 gap_extend 1 \'
+    echo '--make_local_db_fastas '$LOCAL_DB_FASTAS' --gap_open 11 --gap_extend 1 \'
     echo '> '$OUT_FILE
   } > $SUB_SCRIPT
   sbatch $SUB_SCRIPT

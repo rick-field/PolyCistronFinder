@@ -21,26 +21,30 @@ with open(bam_list, "r") as bams:
     for row in bams:
         row = row.strip().split()
         prefix = row[1]
+        hap = row[2]
+        name = prefix + "_" + hap
         try:
-            bam_dict[prefix].append(row)
+            bam_dict[name].append(row)
         except KeyError:
-            bam_dict[prefix] = [row]
+            bam_dict[name] = [row]
 
 with open(bed_list, "r") as beds:
     beds = beds.readlines()
     for row in beds:
         row = row.strip().split()
         prefix = row[0]
-        bed_dict[prefix] = [row[1], row[2]]
+        hap = row[1]
+        name = prefix + "_" + hap 
+        bed_dict[name] = [row[2], row[3], row[4]]
 
 for prefix in bam_dict:
     basics = '\t'.join(bam_dict[prefix][0][0:4])
-    out_file = bam_dict[prefix][3] + bam_dict[prefix][2] + '/' +  prefix + "_" + str(bam_dict[prefix][0][2]) + '_bam_list.txt'
+    out_file = bam_dict[prefix][0][3] + "data/" + bam_dict[prefix][0][2] + '/' +  prefix + '_bam_list.txt'
     with open(out_file, "w") as filehandle:
         for i in bam_dict[prefix]:
             bam = i[-1].split('/')
             filehandle.writelines(bam[-1] + '\t' + i[5] + '\t' + i[4] + '\n')
-        
+
         beds = '\t'.join(bed_dict[prefix])
         with open("PCF_samples.txt", "a") as filehandle:
             filehandle.writelines(basics + '\t' + beds + '\t' + out_file + '\n')
