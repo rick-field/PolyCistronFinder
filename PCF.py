@@ -139,7 +139,7 @@ def bed_maker(bed_list):
     gene_bed_dict = {} # Dictinoary of genes and their .bed file lines
     if args.slim_bed:
         gene_bed_name = [i for i in args.target_bed.split(".")[:-1]]
-        gene_bed_name.append("gene_line_only.bed")
+        gene_bed_name.append("mRNA_line_only.bed")
         gene_bed_name = ".".join(gene_bed_name)
         with open(args.data_path + gene_bed_name, "w") as outfile:
             with open(args.data_path + args.target_bed, "r") as gene_targets_bed:
@@ -321,6 +321,26 @@ def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sa
     print("---")
 
     return mature_ppl_dict, young_ppl_count # Dictionary where PPL ID is the key and the values are the coordinate-sorted gene IDs and the strand; integer count of PPL before filtering
+
+
+
+def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict):
+    ppl_longest_read_dict = {}
+    for gene in mature_ppl_dict[ppl][:-1]:
+        for read in gene_to_reads_dict[gene]:
+            length = 0
+            longest = ""
+            sample_ID = ""
+            if int(read_length_dict[read]) > length:
+                longest = read_length_dict[read]
+                length = int(read_length_dict[read])
+                sample_ID = combined_read_bed_dict[read][-1]
+            else:
+                pass
+
+        ppl_longest_read_dict[gene] = [read, sample_ID]
+
+    return ppl_longest_read_dict
 
 
 
@@ -545,6 +565,7 @@ class PPL:
         for gene in self.genes:
             reads = reads.union(set(gene_to_reads_dict[gene]))
         self.reads = [read for read in list(reads)]
+        self.longest_reads = longest_read_finder(self.ID, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict)
 
     def ppl_blaster(self, ID):
         self.pep_fasta_file = ppl_fastas(pep_fastas, self.ID)
@@ -660,6 +681,9 @@ if __name__ == "__main__":
         ppl = PPL(ppl)
         ppl.ppl_viewer(ppl)
         print("--- " + ppl.ID + " ---")
+        with open(ppl_out_dir + "/" + args.species_prefix + "_PPL_longest_reads.txt", "a") as filehandle:
+            for gene in ppl.longest_reads:
+                filehandle.writelines(ppl.ID + '\t' + gene + '\t' + str(ppl.longest_reads[gene][0]) + '\t' + str(ppl.longest_reads[gene][1][-1]) + '\n')
 
         if args.local_blast or args.remote_blast:
             ppl.ppl_blaster(ppl)
@@ -704,7 +728,8 @@ if __name__ == "__main__":
                                     'genes_with_mutual_hsps': ppl.genes_with_mutual_hsps,
                                     'best_hsp': ppl.best_hsp,
                                     'best_avg_escore': ppl.best_avg_escore,
-                                    'best_hsp_alignments': ppl.aln_sort}
+                                    'best_hsp_alignments': ppl.aln_sort,
+                                    'longest_reads': ppl.longest_reads}
 
 
     """OUTPUT SECTION"""
@@ -749,6 +774,9 @@ if __name__ == "__main__":
                 for alignment in ppl_summary_dict[ppl]['best_hsp_alignments']:
                     alignment = [str(i) for i in alignment]
                     filehandle.writelines('\t'.join(alignment) + '\n')
+
+#    with open(ppl_out_dir + "/" + args.species_prefix + "_PPL_longest_reads.txt", "w") as filehandle:
+#        for ppl in
 
 
     ### SORTING BED FILE MATURE PPL READS AND OUTPUTTING ###
