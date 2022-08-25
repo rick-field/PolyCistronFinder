@@ -406,10 +406,16 @@ def make_blast_db(protein_fasta):
 
     print("Building BLAST database from " + protein_fasta + "...")
     blast_db_name = str(protein_fasta + ".blastdb")
-    cmd = str("makeblastdb -out " + blast_db_name + " -dbtype prot -in " + protein_fasta)
-    print(cmd)
-    subprocess.run(cmd, shell=True, capture_output=True, text=True)
-    return blast_db_name
+    test_name = blast_db_name + ".pot"
+    if exists(test_name):
+        print(cmd)
+        subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        return blast_db_name
+    else:
+        cmd = str("makeblastdb -out " + blast_db_name + " -dbtype prot -in " + protein_fasta)
+        print(cmd)
+        subprocess.run(cmd, shell=True, capture_output=True, text=True)
+        return blast_db_name
 
 
 
