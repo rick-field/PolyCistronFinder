@@ -1,5 +1,5 @@
 # PCF.py
-# Test
+#
 # Author: Rick Field
 #
 # PolyCistronFinder (PCF) takes mapped Iso-seq reads and looks for evidence
@@ -408,7 +408,7 @@ def make_blast_db(protein_fasta):
     blast_db_name = str(protein_fasta + ".blastdb")
     test_name = blast_db_name + ".pot"
     if exists(test_name):
-	print(blast_db_name + " exists. Skipping makeblastdb.")
+        print(blast_db_name + " exists. Skipping makeblastdb.")
         return blast_db_name
     else:
         cmd = str("makeblastdb -out " + blast_db_name + " -dbtype prot -in " + protein_fasta)
