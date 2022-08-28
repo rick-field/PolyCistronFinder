@@ -107,15 +107,16 @@ def bed_maker(bed_list):
 
     combined_read_bed = list(set(combined_read_bed)) # This step is here to filter duplicate entries in the read file. It was a problem with early Yucca Iso-seq read libraries from JGI.
     combined_read_bed_set = []
-    for i in combined_read_bed:
-        i = i.strip().split('\t')
+    ignored_chrom_reads_bed_set = []
+    for read in combined_read_bed:
+        read = read.strip().split('\t')
         if args.chrom_ignore:
-            if i[0] == args.chrom_ignore:
-                pass
+            if read[0] == args.chrom_ignore:
+                ignored_chrom_reads_bed_set.append(read)
             else:
-                combined_read_bed_set.append(i)
+                combined_read_bed_set.append(read)
         else:
-            combined_read_bed_set.append(i)
+            combined_read_bed_set.append(read)
 
     combined_read_bed_dict = {} # Dictionary of reads and their bed coordinates
     read_length_dict = {} # Dictionary of read ids and their lengths
@@ -178,7 +179,7 @@ def bed_maker(bed_list):
     else:
         pass
 
-    return combined_read_bed_set, combined_read_bed_dict, gene_bed_dict, read_length_dict, gene_bed_name # List, dictionary, dictionary
+    return combined_read_bed_set, ignored_chrom_reads_bed_set, combined_read_bed_dict, gene_bed_dict, read_length_dict, gene_bed_name # List, dictionary, dictionary
 
 
 
@@ -645,7 +646,7 @@ if __name__ == "__main__":
         os.mkdir(fasta_dir)
 
     new_bed_list, sample_id_dict = starter(args.bam_file)
-    combined_read_bed_set, combined_read_bed_dict, gene_bed_dict, read_length_dict, gene_bed_name = bed_maker(new_bed_list)
+    combined_read_bed_set, ignored_chrom_reads_bed_set, combined_read_bed_dict, gene_bed_dict, read_length_dict, gene_bed_name = bed_maker(new_bed_list)
     intersects = intersect_finder(combined_read_bed_set, gene_bed_name)
     reads_to_multi_genes_dict, gene_to_reads_dict = reads_to_multi_genes(intersects)
     mature_ppl_dict, young_ppl_count = ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sample_id_dict)
@@ -784,9 +785,10 @@ if __name__ == "__main__":
                     alignment = [str(i) for i in alignment]
                     filehandle.writelines('\t'.join(alignment) + '\n')
 
-#    with open(ppl_out_dir + "/" + args.species_prefix + "_PPL_longest_reads.txt", "w") as filehandle:
-#        for ppl in
-
+    if args.chrom_ignore:
+        with open(ppl_out_dir + "/" + args.species_prefix + "_" + str(args.chrom_ignore) + "_ignored_reads.bed", "w") as filehandle:
+            for read in ignored_chrom_reads_bed_set:
+                filehandle.writelines('\t'.join(read) + '\n')
 
     ### SORTING BED FILE MATURE PPL READS AND OUTPUTTING ###
     outlist = []
