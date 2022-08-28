@@ -98,8 +98,12 @@ def bed_maker(bed_list):
             bed = bed.readlines()
             for row in bed:
                 row = row.strip('\n').split()
-                row.append(sample_ID)
-                combined_read_bed.append('\t'.join(row))
+                map_quality = int(row[4])
+                if map_quality >= 40:
+                    row.append(sample_ID)
+                    combined_read_bed.append('\t'.join(row))
+                else:
+                    pass
 
     combined_read_bed = list(set(combined_read_bed)) # This step is here to filter duplicate entries in the read file. It was a problem with early Yucca Iso-seq read libraries from JGI.
     combined_read_bed_set = []
