@@ -345,7 +345,25 @@ def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict, combined_read_
 
         ppl_longest_read_dict[gene] = [read, sample_ID]
 
-    return ppl_longest_read_dict
+    read_set = []
+    split_reads = []
+    not_split_reads = []
+    for gene in mature_ppl_dict[ppl][:-1]:
+        for read in gene_to_reads_dict[gene]:
+            if read not in read_set:
+                read_set.append(read)
+            else:
+                pass
+
+    for read in read_set:
+        if len(combined_read_bed_dict[read]) > 1:
+            split_reads.append(read)
+        elif len(combined_read_bed_dict[read]) == 1:
+            not_split_reads.append(read)
+
+    return ppl_longest_read_dict, split_reads, not_split_reads
+
+
 
 
 
@@ -575,7 +593,7 @@ class PPL:
         for gene in self.genes:
             reads = reads.union(set(gene_to_reads_dict[gene]))
         self.reads = [read for read in list(reads)]
-        self.longest_reads = longest_read_finder(self.ID, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict)
+        self.longest_reads, self.split_read_list, self.not_split_read_list = longest_read_finder(self.ID, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict)
 
     def ppl_blaster(self, ID):
         self.pep_fasta_file = ppl_fastas(pep_fastas, self.ID)
@@ -691,6 +709,9 @@ if __name__ == "__main__":
         ppl = PPL(ppl)
         ppl.ppl_viewer(ppl)
         print("--- " + ppl.ID + " ---")
+        print("Split read conunt at locus: " + str(len(ppl.split_read_list)))
+        print("Un-split read conunt at locus: " + str(len(ppl.not_split_read_list)))
+        print("---")
         with open(ppl_out_dir + "/" + args.species_prefix + "_PPL_longest_reads.txt", "a") as filehandle:
             for gene in ppl.longest_reads:
                 filehandle.writelines(ppl.ID + '\t' + gene + '\t' + str(ppl.longest_reads[gene][0]) + '\t' + str(ppl.longest_reads[gene][1][-1]) + '\n')
@@ -698,48 +719,52 @@ if __name__ == "__main__":
         if args.local_blast or args.remote_blast:
             ppl.ppl_blaster(ppl)
 
-        if ppl.blast_result_status == "COMPLETE":
-            print("COMPLETE BLAST result: " + ppl.ID + " returned BLAST hits for every gene (" + str(len(ppl.genes)) + ").")
-            if ppl.aln_sort:
-                print(", ".join(ppl.genes_with_mutual_hsps) + " returned mutual HSPs.")
-                print("The best HSP aligned to: " + ppl.best_hsp + " with avergae e-score = " + str(ppl.best_avg_escore))
-                with open(ppl_out_dir + "/" + args.species_prefix + "_COMPLETE_blast_mutual_hsps.txt", "a") as filehandle:
-                    #genes = [i for i in ppl.genes]
-                    filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
-            else:
-                print("No genes in " + ppl.ID + " returned mutual HSPs.")
-                with open(ppl_out_dir + "/" + args.species_prefix + "_COMPLETE_blast_NO_mutual_hsps.txt", "a") as filehandle:
+            if ppl.blast_result_status == "COMPLETE":
+                print("COMPLETE BLAST result: " + ppl.ID + " returned BLAST hits for every gene (" + str(len(ppl.genes)) + ").")
+                if ppl.aln_sort:
+                    print(", ".join(ppl.genes_with_mutual_hsps) + " returned mutual HSPs.")
+                    print("The best HSP aligned to: " + ppl.best_hsp + " with avergae e-score = " + str(ppl.best_avg_escore))
+                    with open(ppl_out_dir + "/" + args.species_prefix + "_COMPLETE_blast_mutual_hsps.txt", "a") as filehandle:
+                        #genes = [i for i in ppl.genes]
+                        filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
+                else:
+                    print("No genes in " + ppl.ID + " returned mutual HSPs.")
+                    with open(ppl_out_dir + "/" + args.species_prefix + "_COMPLETE_blast_NO_mutual_hsps.txt", "a") as filehandle:
+                        #genes = [i for i in ppl.genes]
+                        filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
+
+            elif ppl.blast_result_status == "PARTIAL":
+                print("PARTIAL BLAST result: " + ppl.ID + " contains genes that did not return any BLAST hits: " + ", ".join(ppl.empty_genes) + ".")
+                if ppl.aln_sort:
+                    print(", ".join(ppl.genes_with_mutual_hsps) + " returned mutual HSPs.")
+                    print("The best HSP aligned to: " + ppl.best_hsp + " with avergae e-score = " + str(ppl.best_avg_escore))
+                    with open(ppl_out_dir + "/" + args.species_prefix + "_PARTIAL_blast_mutual_hsps.txt", "a") as filehandle:
+                        #genes = [i for i in ppl.genes]
+                        filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
+                else:
+                    print("No genes in " + ppl.ID + " returned mutual HSPs.")
+                    with open(ppl_out_dir + "/" + args.species_prefix + "_PARTIAL_blast_NO_mutual_hsps.txt", "a") as filehandle:
+                        #genes = [i for i in ppl.genes]
+                        filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
+
+            elif not ppl.blast_result_status:
+                print("NO BLAST RESULTS: " + ppl.ID + " did not return any BLAST hits.")
+                with open(ppl_out_dir + "/" + args.species_prefix + "_NO_blast_results.txt", "a") as filehandle:
                     #genes = [i for i in ppl.genes]
                     filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
 
-        elif ppl.blast_result_status == "PARTIAL":
-            print("PARTIAL BLAST result: " + ppl.ID + " contains genes that did not return any BLAST hits: " + ", ".join(ppl.empty_genes) + ".")
-            if ppl.aln_sort:
-                print(", ".join(ppl.genes_with_mutual_hsps) + " returned mutual HSPs.")
-                print("The best HSP aligned to: " + ppl.best_hsp + " with avergae e-score = " + str(ppl.best_avg_escore))
-                with open(ppl_out_dir + "/" + args.species_prefix + "_PARTIAL_blast_mutual_hsps.txt", "a") as filehandle:
-                    #genes = [i for i in ppl.genes]
-                    filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
-            else:
-                print("No genes in " + ppl.ID + " returned mutual HSPs.")
-                with open(ppl_out_dir + "/" + args.species_prefix + "_PARTIAL_blast_NO_mutual_hsps.txt", "a") as filehandle:
-                    #genes = [i for i in ppl.genes]
-                    filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
-
-        elif not ppl.blast_result_status:
-            print("NO BLAST RESULTS: " + ppl.ID + " did not return any BLAST hits.")
-            with open(ppl_out_dir + "/" + args.species_prefix + "_NO_blast_results.txt", "a") as filehandle:
-                #genes = [i for i in ppl.genes]
-                filehandle.writelines(ppl.ID + '\t' + ", ".join(ppl.genes) + '\n')
-
-        ppl_summary_dict[ppl.ID] = {'genes': ppl.genes,
-                                    'gene_count': ppl.gene_count,
-                                    'genes_with_hsps': ppl.genes_with_hsps,
-                                    'genes_with_mutual_hsps': ppl.genes_with_mutual_hsps,
-                                    'best_hsp': ppl.best_hsp,
-                                    'best_avg_escore': ppl.best_avg_escore,
-                                    'best_hsp_alignments': ppl.aln_sort,
-                                    'longest_reads': ppl.longest_reads}
+            ppl_summary_dict[ppl.ID] = {'genes': ppl.genes,
+                                        'gene_count': ppl.gene_count,
+                                        'genes_with_hsps': ppl.genes_with_hsps,
+                                        'genes_with_mutual_hsps': ppl.genes_with_mutual_hsps,
+                                        'best_hsp': ppl.best_hsp,
+                                        'best_avg_escore': ppl.best_avg_escore,
+                                        'best_hsp_alignments': ppl.aln_sort,
+                                        'longest_reads': ppl.longest_reads}
+        else:
+            ppl_summary_dict[ppl.ID] = {'genes': ppl.genes,
+                                        'gene_count': ppl.gene_count,
+                                        'longest_reads': ppl.longest_reads}
 
 
     """OUTPUT SECTION"""
@@ -780,10 +805,15 @@ if __name__ == "__main__":
         filehandle.writelines('PPL with mutual HSPs for at least 2 genes\n')
         filehandle.writelines('\t'.join(["PPL_ID", 'subject_gene_ID', 'query_gene_ID', 'query_start', 'query_stop', 'query_cov_%', 'evalue']) + '\n')
         for ppl in ppl_summary_dict:
-            if ppl_summary_dict[ppl]['genes_with_mutual_hsps']:
-                for alignment in ppl_summary_dict[ppl]['best_hsp_alignments']:
-                    alignment = [str(i) for i in alignment]
-                    filehandle.writelines('\t'.join(alignment) + '\n')
+            if args.local_blast or args.remote_blast:
+                if ppl_summary_dict[ppl]['genes_with_mutual_hsps']:
+                    for alignment in ppl_summary_dict[ppl]['best_hsp_alignments']:
+                        alignment = [str(i) for i in alignment]
+                        filehandle.writelines('\t'.join(alignment) + '\n')
+                else:
+                    pass
+            else:
+                pass
 
     if args.chrom_ignore:
         with open(ppl_out_dir + "/" + args.species_prefix + "_" + str(args.chrom_ignore) + "_ignored_reads.bed", "w") as filehandle:
