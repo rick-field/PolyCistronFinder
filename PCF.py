@@ -280,24 +280,44 @@ def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sa
     teen_ppl_dict = {}
     ppl_read_counts = {}
     count = 1
+    all_genes_read_dict = {}
+    if not args.filter:
+        filter = len(sample_id_dict)
+    else:
+        filter = args.filter
     for gene in young_ppl_keys:
         reads = gene_to_reads_dict[gene]
         for i in young_ppl_dict[gene]:
             reads = set(gene_to_reads_dict[i]).union(set(reads))
-        # Exclude loci that do not pass the filter cutoff
-        if not args.filter:
-            filter = len(sample_id_dict)
-        else:
-            filter = args.filter
-        if len(reads) >= filter:
-            ppl = str(args.species_prefix + "_PPL" + str(count).zfill(5))
-            teen_ppl_dict[ppl] = list(young_ppl_dict[gene])
-            ppl_read_counts[ppl] = len(reads)
-            count += 1
-        else:
-            pass
+        # This is the janky filtering step that no longer really has any effect
+        ppl = str("PPL" + str(count).zfill(5))
+        teen_ppl_dict[ppl] = list(young_ppl_dict[gene])
+        ppl_read_counts[ppl] = len(reads)
+        count += 1
 
-    mature_ppl_dict = {} # This is the main
+    # This is now the true filtering step, which requires a minimum number of reads
+    # that are mapped to every gene in the locus.
+    count = 1
+    total_read_count_dict = {}
+    for ppl in list(teen_ppl_dict.keys()):
+        total_read_count_dict[ppl] = ppl_read_counts[ppl]
+        all_genes_reads = set(gene_to_reads_dict[teen_ppl_dict[ppl][0]])
+        for gene in teen_ppl_dict[ppl]:
+            all_genes_reads = set(gene_to_reads_dict[gene]).intersection(set(all_genes_reads))
+        all_genes_read_dict[ppl] = list(all_genes_reads)
+        if len(all_genes_reads) >= filter:
+            ppl_new = str(args.species_prefix + "_PPL" + str(count).zfill(5))
+            teen_ppl_dict[ppl_new] = list(teen_ppl_dict[ppl])
+            total_read_count_dict[ppl_new] = ppl_read_counts[ppl]
+            all_genes_read_dict[ppl_new] = all_genes_read_dict[ppl]
+            count += 1
+            del all_genes_read_dict[ppl]
+            del teen_ppl_dict[ppl]
+            del ppl_read_counts[ppl]
+        else:
+            del teen_ppl_dict[ppl]
+
+    mature_ppl_dict = {} # This is the main container for filtered PPL and their genes and strand
     for ppl in teen_ppl_dict:
         sort_list = []
         first_gene = teen_ppl_dict[ppl][0]
@@ -317,19 +337,19 @@ def ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sa
     print("PPL CURATION SUMMARY\nPPL_ID\tgene_ID\ttotal_reads")
     for ppl in mature_ppl_dict:
         gene = ', '.join(mature_ppl_dict[ppl][:-1])
-        line = ppl + '\t' + gene + '\t' + str(ppl_read_counts[ppl])
+        line = ppl + '\t' + gene + '\t' + str(total_read_count_dict[ppl])
         print(line)
 
     print("---")
     print(str(len(young_ppl_dict)) + ' loci were found with at least one read covering at least two gene models ("young" PPL).')
-    print(str(len(set(mature_ppl_dict))) + ' loci passed minimum coverage requirement (>' + str(args.filter) + ' reads, "mature" PPL).')
+    print(str(len(set(mature_ppl_dict))) + ' loci passed minimum coverage requirement (>' + str(args.filter) + ' reads mapped to every gene, "mature" PPL).')
     print("---")
 
-    return mature_ppl_dict, young_ppl_count # Dictionary where PPL ID is the key and the values are the coordinate-sorted gene IDs and the strand; integer count of PPL before filtering
+    return mature_ppl_dict, young_ppl_count, all_genes_read_dict # Dictionary where PPL ID is the key and the values are the coordinate-sorted gene IDs and the strand; integer count of PPL before filtering
 
 
 
-def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict):
+def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict, all_genes_read_dict):
     ppl_longest_read_dict = {}
     for gene in mature_ppl_dict[ppl][:-1]:
         for read in gene_to_reads_dict[gene]:
@@ -345,17 +365,26 @@ def longest_read_finder(ppl, mature_ppl_dict, gene_to_reads_dict, combined_read_
 
         ppl_longest_read_dict[gene] = [read, sample_ID]
 
-    read_set = []
+#    read_set = []
+#    split_reads = []
+#    not_split_reads = []
+#    for gene in mature_ppl_dict[ppl][:-1]:
+#        for read in gene_to_reads_dict[gene]:
+#            if read not in read_set:
+#                read_set.append(read)
+#            else:
+#                pass
+
+#    read_set = []
     split_reads = []
     not_split_reads = []
-    for gene in mature_ppl_dict[ppl][:-1]:
-        for read in gene_to_reads_dict[gene]:
-            if read not in read_set:
-                read_set.append(read)
-            else:
-                pass
+#    for read in all_genes_read_dict[ppl]:
+#        if read not in read_set:
+#            read_set.append(read)
+#        else:
+#            pass
 
-    for read in read_set:
+    for read in all_genes_read_dict[ppl]:
         if len(combined_read_bed_dict[read]) > 1:
             split_reads.append(read)
         elif len(combined_read_bed_dict[read]) == 1:
@@ -593,7 +622,7 @@ class PPL:
         for gene in self.genes:
             reads = reads.union(set(gene_to_reads_dict[gene]))
         self.reads = [read for read in list(reads)]
-        self.longest_reads, self.split_read_list, self.not_split_read_list = longest_read_finder(self.ID, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict)
+        self.longest_reads, self.split_read_list, self.not_split_read_list = longest_read_finder(self.ID, mature_ppl_dict, gene_to_reads_dict, combined_read_bed_dict, all_genes_read_dict)
 
     def ppl_blaster(self, ID):
         self.pep_fasta_file = ppl_fastas(pep_fastas, self.ID)
@@ -655,19 +684,20 @@ if __name__ == "__main__":
     else:
         os.mkdir(ppl_out_dir)
 
-    fasta_dir = os.path.join(args.output_path, args.species_prefix + "_PPL_fasta_sequences")
-    if exists(fasta_dir):
-        shutil.rmtree(fasta_dir)
-        os.mkdir(fasta_dir)
-        print(str(fasta_dir) + " exists. Existing files will be deleted...")
-    else:
-        os.mkdir(fasta_dir)
+    if args.local_blast or args.remote_blast:
+        fasta_dir = os.path.join(args.output_path, args.species_prefix + "_PPL_fasta_sequences")
+        if exists(fasta_dir):
+            shutil.rmtree(fasta_dir)
+            os.mkdir(fasta_dir)
+            print(str(fasta_dir) + " exists. Existing files will be deleted...")
+        else:
+            os.mkdir(fasta_dir)
 
     new_bed_list, sample_id_dict = starter(args.bam_file)
     combined_read_bed_set, ignored_chrom_reads_bed_set, combined_read_bed_dict, gene_bed_dict, read_length_dict, gene_bed_name = bed_maker(new_bed_list)
     intersects = intersect_finder(combined_read_bed_set, gene_bed_name)
     reads_to_multi_genes_dict, gene_to_reads_dict = reads_to_multi_genes(intersects)
-    mature_ppl_dict, young_ppl_count = ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sample_id_dict)
+    mature_ppl_dict, young_ppl_count, all_genes_read_dict = ppl_curator(reads_to_multi_genes_dict, gene_to_reads_dict, gene_bed_dict, sample_id_dict)
 
     if args.ref_pep_fastas: # Extract peptide sequences for all genes in all PPL, fasta format
         pep_fastas = species_fastas(args.ref_pep_fastas)
@@ -708,9 +738,19 @@ if __name__ == "__main__":
     for ppl in mature_ppl_dict:
         ppl = PPL(ppl)
         ppl.ppl_viewer(ppl)
+        poly_to_spliced_ratio = 0.0
+        try:
+            poly_to_spliced_ratio = (len(ppl.not_split_read_list) / len(ppl.split_read_list))
+        except ZeroDivisionError:
+            poly_to_spliced_ratio = 1.0
+        if poly_to_spliced_ratio >= 1.0:
+            with open(ppl_out_dir + "/" + args.species_prefix + "_PPL_mostly_polycistronic_trasncription.txt", "a") as filehandle:
+                filehandle.writelines(ppl.ID + '\t' + str(len(ppl.not_split_read_list)) + '\t' + str(len(ppl.split_read_list)) + '\n')
+        else:
+            pass
         print("--- " + ppl.ID + " ---")
-        print("Split read conunt at locus: " + str(len(ppl.split_read_list)))
-        print("Un-split read conunt at locus: " + str(len(ppl.not_split_read_list)))
+        print("Split read count at locus:\t" + str(len(ppl.split_read_list)))
+        print("Un-split read count at locus:\t" + str(len(ppl.not_split_read_list)))
         print("---")
         with open(ppl_out_dir + "/" + args.species_prefix + "_PPL_longest_reads.txt", "a") as filehandle:
             for gene in ppl.longest_reads:
