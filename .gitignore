@@ -1,5 +1,5 @@
 *
-!PCF_blacklist_filter.py
+!PCF_blacklister.py
 !PCF_intron_finder.py
 !PCF_intergenic_calculator.py
 !PCF_longest_read_extractor.py
