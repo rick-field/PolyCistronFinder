@@ -1,4 +1,8 @@
 *
+!PCF_zero_distance_filter.py
+!PCF_make_bed_with_blast.py
+!PCF_chloroplast_blast.sh
+!PCF_blast_result_split.py
 !PCF_blacklister.py
 !PCF_intron_finder.py
 !PCF_intergenic_calculator.py

@@ -1,4 +1,10 @@
+# Author: Rick Field
+#
+# Purpose: to count introns in each gene in a typical 'gene_exons.gff3'
+# formatted file. Prints to std_out. 
+
 import sys
+
 
 
 infile = str(sys.argv[1])
@@ -46,7 +52,7 @@ with open(infile, "r") as filehandle:
     for gene in gene_dict:
         mRNA_ID = map_file[gene]
         exons = exon_dict[mRNA_ID]
-        exon_count = len(exons)
+        exon_count = len(exons) - 1
         exon_list = []
         for exon in exons:
             ex = ", ".join(exon)
